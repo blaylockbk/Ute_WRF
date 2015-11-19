@@ -24,6 +24,7 @@ def get_domain(this_one):
         Example demonstrated below, or run this script in the terminal.
     """
 
+
     domains = {
     'uintah_basin': {
                     'map_domain'    :'Uintah_Basin',                
@@ -199,3 +200,37 @@ if __name__ == "__main__":
     print domain
     print domain.keys()
     print ""
+    
+    ## Draw some subdomains on a map...
+    from mpl_toolkits.basemap import Basemap    
+    bot_left_lon = get_domain('full_utah')['bot_left_lon']
+    bot_left_lat = get_domain('full_utah')['bot_left_lat']    
+    top_right_lon = get_domain('full_utah')['top_right_lon']    
+    top_right_lat = get_domain('full_utah')['top_right_lat']    
+    m = Basemap(resolution='i',area_thresh=10.,projection='cyl',\
+        llcrnrlon=bot_left_lon,llcrnrlat=bot_left_lat,\
+        urcrnrlon=top_right_lon,urcrnrlat=top_right_lat,)
+    
+    m.drawcoastlines()
+    m.drawcounties()
+    m.fillcontinents()
+    #Plot Subdomains (Salt Lake Valley, Utah Lake, etc...)
+    for area in ['salt_lake_valley','utah_valley','cache_valley','uintah_basin','bear_lake']:    
+        domain = get_domain(area)
+        toprightlat = domain['top_right_lat']
+        topleftlat = domain['top_right_lat']
+        toprightlon = domain['top_right_lon']
+        topleftlon = domain['bot_left_lon']
+        botrightlat = domain['bot_left_lat']
+        botrightlon = domain['top_right_lon']
+        botleftlat = domain['bot_left_lat']
+        botleftlon = domain['bot_left_lon']
+        
+        m.drawgreatcircle(toprightlon,toprightlat,topleftlon,topleftlat, color='#FFFF4C', linewidth='3')
+        m.drawgreatcircle(topleftlon,topleftlat,botleftlon,botleftlat, color='#FFFF4c', linewidth='3')
+        m.drawgreatcircle(botleftlon,botleftlat,botrightlon,botrightlat, color='#FFFF4c', linewidth='3')
+        m.drawgreatcircle(botrightlon,botrightlat,toprightlon,toprightlat, color='#FFFF4c', linewidth='3')
+
+    
+    
+    
