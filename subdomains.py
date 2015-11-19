@@ -24,7 +24,6 @@ def get_domain(this_one):
         Example demonstrated below, or run this script in the terminal.
     """
 
-
     domains = {
     'uintah_basin': {
                     'map_domain'    :'Uintah_Basin',                
