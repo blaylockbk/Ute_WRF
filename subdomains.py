@@ -211,6 +211,7 @@ if __name__ == "__main__":
         llcrnrlon=bot_left_lon,llcrnrlat=bot_left_lat,\
         urcrnrlon=top_right_lon,urcrnrlat=top_right_lat,)
     
+    m.drawstates(color='k', linewidth=.8)
     m.drawcoastlines()
     m.drawcounties()
     m.fillcontinents()
