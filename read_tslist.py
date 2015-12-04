@@ -54,7 +54,8 @@ if __name__ == "__main__":
     from mpl_toolkits.basemap import Basemap
     from scipy.io import netcdf # Other people like to use netcdf4, 
                                 # but I don't have that installed :(
-    
+    from terrain_colormap import * # My custom colormap
+
     
     wrf_dir = '/uufs/chpc.utah.edu/common/home/horel-group4/model/bblaylock/WRF3.7_sniplake/WRFV3/test/em_real/'
     
@@ -104,13 +105,21 @@ if __name__ == "__main__":
     m = Basemap(resolution='i',area_thresh=10.,projection='cyl',\
         llcrnrlon=bot_left_lon,llcrnrlat=bot_left_lat,\
         urcrnrlon=top_right_lon,urcrnrlat=top_right_lat,)
-        
+         
+            
+    plt.figure(2)
+
     #m.drawcoastlines()
     #m.drawstates()
         
-    # Add terrain to the plot
-    plt.figure(2)
-    plt.pcolormesh(wrf_lon,wrf_lat,wrf_ter,cmap=plt.get_cmap('terrain'))
+    # Plot a shapefile of the major roads (shape files can be downloaded here: https://www.census.gov/cgi-bin/geo/shapefiles/index.php)
+    #BASE = '/uufs/chpc.utah.edu/common/home/u0553130/'
+    #m.readshapefile(BASE+'shape_files/tl_2015_UtahRoads_prisecroads/tl_2015_49_prisecroads','roads', linewidth=.1, color='grey')
+   
+    # Plot terrain
+    plt.pcolormesh(wrf_lon,wrf_lat,wrf_ter,
+                   #cmap=plt.get_cmap('terrain'))    # Use python's terrain colormap
+                   cmap=terrain_cmap_256())          # Use my custom terrain colormap
     cbar = plt.colorbar(orientation='horizontal',shrink=.7,\
                         fraction=0.036, pad=0)    
     cbar.set_label('Terrain Height (meters)')
@@ -121,4 +130,4 @@ if __name__ == "__main__":
         plt.annotate(stn_id[i],xy=(lon[i],lat[i]))
             
     plt.show()
-    #plt.savefig('TS_location_map.png',bbox_inches='tight',dpi=300
+    #plt.savefig('TS_location_map.png',bbox_inches='tight',dpi=300)
