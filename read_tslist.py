@@ -32,27 +32,93 @@ def read_tslist(tsfile):
             # Discard the commented lines, first three lines of the tslist file
                 continue
             # Grab the data from each line (throw away white spaces)
-            NAME = np.append(NAME, line[0:25].strip())
-            STNID = np.append(STNID, line[25:32].strip())
-            LAT = np.append(LAT, float(line[32:41]))
-            LON = np.append(LON, float(line[41:]))
-    
+            try:
+                NAME = np.append(NAME, line[0:25].strip())
+                STNID = np.append(STNID, line[25:32].strip())
+                LAT = np.append(LAT, float(line[32:41]))
+                LON = np.append(LON, float(line[41:]))
+            except:
+                print "----------------------------------------------------"                
+                print "Error: something may be wrong with the tslist file."
+                print "Check that there isn't a blank line at the bottom."
+                print "----------------------------------------------------"            
+                continue                
+                
     return NAME,STNID,LAT,LON
 
 
 #--- Example -----------------------------------------------------------------#
 if __name__ == "__main__":
+  
+    import matplotlib.pyplot as plt 
+    from mpl_toolkits.basemap import Basemap
+    from scipy.io import netcdf # Other people like to use netcdf4, 
+                                # but I don't have that installed :(
     
-    # Read the tslist file
-    name,stn_id,lat,lon = read_tslist('./WRFV3/test/em_real/tslist')
     
-    # Plot the locations of the sites
-    import matplotlib.pyplot as plt
+    wrf_dir = '/uufs/chpc.utah.edu/common/home/horel-group4/model/bblaylock/WRF3.7_sniplake/WRFV3/test/em_real/'
+    
+    # Read the tslist file using the function above
+    name,stn_id,lat,lon = read_tslist(wrf_dir+'tslist')
+    
+    # Plot the locations of the sites on a plane
+    plt.figure(1)    
     plt.scatter(lon,lat)
-    #Add Labels to each point
+    # Add Labels to each point
     for i in np.arange(0,len(stn_id)):
         plt.annotate(stn_id[i],xy=(lon[i],lat[i]))
-      
-    print "Station Names:"
+    
+    # Print a list of all the station names
+    
+    print "\nStation Names:"
     for i in name:
         print '  ',i
+        
+        
+    #-------------------------------------------------------------------------#
+    # We can also plot these locations on a terrain map using the wrfout file
+    #-------------------------------------------------------------------------#    
+    
+    # Specify the wrfout file or use the met_em file or the geo_em, but may 
+    # need to change some of the below variables if you do that.
+    wrf_file = 'wrfout_d02_2015-06-18_00:00:00'
+    
+    # Open NetCDF file and import needed variables
+    nc = netcdf.netcdf_file(wrf_dir+wrf_file,'r')
+    wrf_lon = nc.variables['XLONG'][:][0].copy()
+    wrf_lat = nc.variables['XLAT'][:][0].copy()
+    wrf_ter = nc.variables['HGT'][:][0].copy()
+    wrf_landmask = nc.variables['LANDMASK'][0].copy()
+    
+    # I like to set the water points to a negative elevation so that the color 
+    # map will plot the water as blue
+    wrf_ter[wrf_landmask==0] = -99
+
+    # Set map boundaries with a little buffer on each side
+    bot_left_lat =  lat.min()-0.2
+    top_right_lat = lat.max()+0.2    
+    bot_left_lon =  lon.min()-0.2
+    top_right_lon = lon.max()+0.2
+    
+    # Create the map
+    m = Basemap(resolution='i',area_thresh=10.,projection='cyl',\
+        llcrnrlon=bot_left_lon,llcrnrlat=bot_left_lat,\
+        urcrnrlon=top_right_lon,urcrnrlat=top_right_lat,)
+        
+    #m.drawcoastlines()
+    #m.drawstates()
+        
+    # Add terrain to the plot
+    plt.figure(2)
+    plt.pcolormesh(wrf_lon,wrf_lat,wrf_ter,cmap=plt.get_cmap('terrain'))
+    cbar = plt.colorbar(orientation='horizontal',shrink=.7,\
+                        fraction=0.036, pad=0)    
+    cbar.set_label('Terrain Height (meters)')
+
+    # Plot the station locations and labels on the map
+    m.scatter(lon,lat, color='white')
+    for i in np.arange(0,len(stn_id)):
+        plt.annotate(stn_id[i],xy=(lon[i],lat[i]))
+            
+    plt.show()
+    #plt.savefig('TS_location_map.png',bbox_inches='tight',dpi=300
