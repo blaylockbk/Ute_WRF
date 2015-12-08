@@ -154,11 +154,13 @@ def get_vert_data(TSfile,model_start,get_this_time,model_timestep=2,p_top_reques
     # 1)difference between desired time and model start time
     # 2)how many seconds is between the times?
     # 3)divide by the model timestep = line number the profile is in
-    seconds_from_start = (get_this_time-model_start).seconds
+    deltaT = get_this_time-model_start    
+    seconds_from_start = deltaT.seconds+deltaT.days*86400
     row_number = seconds_from_start/model_timestep + 1 #plus one to account for header row    
     # if the model start and the get time are the same then return the first
-    # row time in the model which is really the first time step.    
+    # row time in the model which is really the first time step.      
     if model_start == get_this_time:
+        print "called the first time", model_start==get_this_time
         row_number = 2
     print 'line:', row_number
     
@@ -251,7 +253,8 @@ if __name__ == "__main__":
     
     # Get a vertical profile
     model_start = datetime(2015,6,18,0)
-    get_time = datetime(2015,6,18,23,59)
+    get_time = datetime(2015,6,19,0,0)
+    
     profile = get_vert_data(wrf_dir+tsfile,model_start,get_time)
     
     # plot a vertical profile
