@@ -158,7 +158,7 @@ def get_vert_data(TSfile,model_start,get_this_time,model_timestep=2,p_top_reques
     row_number = seconds_from_start/model_timestep + 1 #plus one to account for header row    
     # if the model start and the get time are the same then return the first
     # row time in the model which is really the first time step.    
-    if seconds_from_start == get_this_time:
+    if model_start == get_this_time:
         row_number = 2
     print 'line:', row_number
     
