@@ -80,7 +80,7 @@ lon = np.arange(150,300)
 num_levs = len(pointLevs)
 
 # W-E cross section (KSLC)
-plt.figure(2,figsize=[9,3])
+plt.figure(2,figsize=[5,8])
 WEcross = phi[:,lat,lon]
 levels = (np.arange(0,num_levs) * np.ones([np.shape(WEcross)[1],num_levs])).T
 LONcross = LON[lat,lon]*np.ones_like(WEcross)
@@ -94,12 +94,11 @@ plt.xlabel('Longitude',fontsize=20)
 
 yticks = WEcross.min()
 yticks = np.append(yticks, WEcross.max())
-yticks = np.append(yticks, np.arange(np.floor(WEcross.min()/1000)*1000,WEcross.max(),500))
+yticks = np.append(yticks, np.arange(np.floor(WEcross.min()/1000)*3000,WEcross.max(),2000))
 
 plt.yticks(yticks)
 plt.xlim([LONcross.min(),LONcross.max()])
 plt.ylim([0,WEcross.max()])
-plt.ylim([WEcross.min()-150,3500])
 
 cb = plt.colorbar(shrink=.95,pad=.02,ticks=np.arange(0,num_levs+1,4))
 cb.ax.set_ylabel('Model Level',fontsize=15)
@@ -114,5 +113,5 @@ plt.fill_between(LON[lat,lon],0,HGT[lat,lon],color="black")
 NScross = phi[:,10:20,225]
 
 
-plt.savefig(FIG_DIR+str(num_levs)+'_below3500.png',bbox_inches="tight",dpi=300)
+plt.savefig(FIG_DIR+str(num_levs)+'.png',bbox_inches="tight",dpi=300)
 plt.show()
