@@ -1,0 +1,24 @@
+! Brian Blaylock
+! November 2015
+! Hardwire the initial lake temperature to 303 K for this particualar day.
+! Added on line 2529 after "IF (domain_ClockIsStartTime(grid)) THEN account_for_zero_soil_moisture : SELECT CASE ( model_config_rec%sf_surface_physics(grid%id) )"
+        
+        !----- BKB: Change Great Salt Lake Temperature ---------------------------
+        ! Modifications for the lake temperature, etc
+        ! Set GSL Temp
+        DO j = jts, MIN(jde-1,jte)
+            DO i = its, MIN(ide-1,ite)
+                IF ( ( grid%xlat(i,j) .gt. 40.5 ) .and.     &
+                     ( grid%xlat(i,j) .lt. 41.8 ) .and.     &
+                     ( grid%xlong(i,j) .gt. -113.25 ) .and. &
+                     ( grid%xlong(i,j) .lt. -112.0 ) .and.  &
+                     ( grid%ivgtyp(i,j) .eq. 17 ) ) THEN
+                  print*,'at ijk ',i,' ',j,' ',k
+                  print*,'sst changed from ',grid%tsk(i,j)
+                      grid%tsk(i,j) = 303.0
+                      grid%sst(i,j) = 303.0
+                  print*,'to ',grid%tsk(i,j)
+                END IF
+            END DO
+        END DO
+        !----- BKB: Attempt to change Great Salt Lake Temperature ---------------------------

@@ -1,0 +1,70 @@
+! Brian Blaylock
+! 1 February 2016
+
+! Add continuous tracer to WRF (if you only change the tracer in the module_initilize_real
+! then you'll only get an initial "puff". This modificaiton keeps the plume going the entire run)
+! Added on line 265 after "ALLOCATE (max_horiz_cfl_tmp(grid%num_titles))
+
+!---------------------------------------------------------------
+!---------------- Brian Blaylock Continuous Tracers -----------
+!---------------------------------------------------------------
+IF ( config_flags%tracer_opt == 2 ) THEN
+    IF (grid%id == 2 ) THEN
+
+! South Plume
+    DO j = jds + 198, jds +  203, 1
+        DO i = ids + 225, ids + 240, 1
+            IF (ips .LE. i .and. ipe .GE. i .and. jps .LE. j .and. jpe .GE. j ) THEN
+                tracer(i,1,j,P_S_SLV) = 1.
+                tracer(i,2,j,P_S_SLV) = 1.
+                tracer(i,3,j,P_S_SLV) = 1.
+            END IF
+        END DO
+    END DO
+
+
+! North_ plume
+    DO j = jds + 220 , jds +  225, 1
+        DO i = ids + 215, ids + 230, 1
+            IF (ips .LE. i .and. ipe .GE. i .and. jps .LE. j .and. jpe .GE. j ) THEN
+                tracer(i,1,j,P_N_SLV) = 1.
+                tracer(i,2,j,P_N_SLV) = 1.
+                tracer(i,3,j,P_N_SLV) = 1.
+            END IF
+        END DO
+    END DO
+
+
+
+! 3x3 Plume box on at the GSL Buoy   
+    DO j = jds + 237 , jds +  239, 1
+        DO i = ids + 196, ids + 198, 1
+            IF (ips .LE. i .and. ipe .GE. i .and. jps .LE. j .and. jpe .GE. j ) THEN
+                tracer(i,1,j,P_BUOY) = 1.
+                tracer(i,2,j,P_BUOY) = 1.
+                tracer(i,3,j,P_BUOY) = 1.
+            END IF
+        END DO
+    END DO
+   
+   
+! Tracer plane over entire Great Salt Lake
+    DO j = jts, MIN(jde-1,jte)
+        DO i = its, MIN(ide-1,ite)
+            IF ( ( grid%xlat(i,j) .gt. 40.5 ) .and.     &
+                 ( grid%xlat(i,j) .lt. 41.8 ) .and.     &
+                 ( grid%xlong(i,j) .gt. -113.25 ) .and. &
+                 ( grid%xlong(i,j) .lt. -112.0 ) .and.  &
+                 ( grid%ivgtyp(i,j) .eq. 17 ) ) THEN
+                      tracer(i, 1, j, P_LAKE)  = 1.
+                      tracer(i, 2, j, P_LAKE)  = 1.
+                      tracer(i, 3, j, P_LAKE)  = 1.
+            END IF
+        END DO
+    END DO
+
+
+    END IF
+END IF
+!---------------------------------------------------------------------
+!---------------------------------------------------------------------
