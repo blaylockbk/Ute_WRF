@@ -2,20 +2,19 @@ Ute-WRF/
 ==============
 
 Mostly python codes that I've created at the University of Utah Mountain Meteorology Group.
-These are scripts for processing WRF NetCDF files.
 
 
 
 ---------------------------------------------------------------------------------------------
-         TSLIST
----------------------------------------------------------------------------------------------
+##TSLIST
+
 "tslist" folder includes scripts for dealing with the high resolution output for stations
 defined in the tslist
 
 
 ---------------------------------------------------------------------------------------------
-         MODIFICATIONS
----------------------------------------------------------------------------------------------
+##MODIFICATIONS
+
 "modifications" folder includes modificaitons to WRF code.
 
   Initialize WRF with HRRR analyses (custom WPS tables):
