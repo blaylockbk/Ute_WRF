@@ -6,14 +6,25 @@ Mostly python codes that I've created at the University of Utah Mountain Meteoro
 
 
 
-####TSLIST
+####Functions
 
-"tslist" folder includes scripts for dealing with the high resolution output for stations
-defined in the tslist
+"functions" folder includes functions dealing with various needs for processing WRF data.
 
+    custom_domains.py......................................dictionary of predefined subdomain lat/lon for plotting basemap
+    
+    landuse_colormap.py....................................colormap for WRF landuse categories: MODIS20, MODIS21, NLCD, USGS
+    
+    terrain_colormap.py....................................colormap for terrain. Set lake mask to low number for blue water
+    
+    read_tslist.py.........................................read data in the tslist file which includes station name, lat, lon
+    
+    get_ts_data.py.........................................loads station header, time series file, vertical profile variables
+    
+    trim_map.py............................................trims wrf data. Useful if you have a large domain and only want a section
+    
+    wind_calcs.py...........................................convert from UV components to speed and direction, vice versa, etc.
 
-
-####MODIFICATIONS
+####Modificaitons
 
 "modifications" folder includes modificaitons to WRF code.
 
