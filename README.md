@@ -10,19 +10,19 @@ Mostly python codes that I've created at the University of Utah Mountain Meteoro
 
 "functions" folder includes functions dealing with various needs for processing WRF data.
 
-    custom_domains.py......................................dictionary of predefined subdomain lat/lon for plotting basemap
+    custom_domains.py................dictionary of predefined subdomain lat/lon for plotting basemap
     
-    landuse_colormap.py....................................colormap for WRF landuse categories: MODIS20, MODIS21, NLCD, USGS
+    landuse_colormap.py..............colormap for WRF landuse categories: MODIS20, MODIS21, NLCD, USGS
     
-    terrain_colormap.py....................................colormap for terrain. Set lake mask to low number for blue water
+    terrain_colormap.py..............colormap for terrain. Set lake mask to low number for blue water
     
-    read_tslist.py.........................................read data in the tslist file which includes station name, lat, lon
+    read_tslist.py...................read data in the tslist file which includes station name, lat, lon
     
-    get_ts_data.py.........................................loads station header, time series file, vertical profile variables
+    get_ts_data.py...................loads station header, time series file, vertical profile variables
     
-    trim_map.py............................................trims wrf data. Useful if you have a large domain and only want a section
+    trim_map.py......................trims wrf data. Useful if you have a large domain and only want a section
     
-    wind_calcs.py...........................................convert from UV components to speed and direction, vice versa, etc.
+    wind_calcs.py....................convert from UV components to speed and direction, vice versa, etc.
 
 ####Modificaitons
 
