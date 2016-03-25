@@ -1,9 +1,10 @@
 # Brian Blaylock
 # 4 December 2015
 
-# Two functions to process data in a TS file outputted by WRF.
+# Three functions to process data in a TS file outputted by WRF.
 #   get_ts_header reads the header and puts the data in a dictionary.
 #   get_ts_data reads the data and puts a variable in a numpy array.
+#   get_vert_data reads the data from the vertical profiles
 
 # More information about WRF's tslist can be found in the WRF directory
 # WRFV3/run/README.tslist
