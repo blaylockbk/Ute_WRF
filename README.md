@@ -7,7 +7,8 @@ Mostly python codes that I've created at the University of Utah Mountain Meteoro
     
     plot_*.py........................plot a 2D map view of data at the surface or a model level
     
-    tslist_*.py.......................plot data from a ts file or vertical profile output
+    tslist_*.py......................plot data from a ts file or vertical profile output
+    
     
 
 
