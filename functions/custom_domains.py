@@ -197,6 +197,10 @@ if __name__ == "__main__":
     for i in domain:
         print "  ", i    
 
+    print ""
+    print get_domain('all')
+    print ""
+
     print domain
     print domain.keys()
     print ""
