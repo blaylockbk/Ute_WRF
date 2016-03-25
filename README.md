@@ -3,12 +3,17 @@ Ute-WRF/
 
 Mostly python codes that I've created at the University of Utah Mountain Meteorology Group.
 
-
+    cross_section_*.py...............plot a cross section through the model domain (wrfout or auxhist files)
+    
+    plot_*.py........................plot a 2D map view of data at the surface or a model level
+    
+    tslist_*.py.......................plot data from a ts file or vertical profile output
+    
 
 
 ####Functions
 
-"functions" folder includes functions dealing with various needs for processing WRF data.
+"functions" folder includes functions dealing with various needs for processing WRF data. Note: some of these have been renamed since I wrote my other plotting scripts.
 
     custom_domains.py................dictionary of predefined subdomain lat/lon for plotting basemap
     
@@ -37,6 +42,8 @@ Mostly python codes that I've created at the University of Utah Mountain Meteoro
     
   Initialize and set continuous passive tracer:
   
+    Registry.EM.bkb.tracer.................................Set new tracer variable in registry
+    
     module_initialize_real.F.bkb.tracer....................Initialize a passive tracer (code snippit)
     
     solve_em.bkb.tracer....................................Create continuous tracer emit every timestep (code snippit)
@@ -49,7 +56,10 @@ Mostly python codes that I've created at the University of Utah Mountain Meteoro
   
     shrink_GSL.py..........................................Python script for changing lake area
     
+####Other
+
+"other" folder includes miscellaneous WRF code.
     
-  
-
-
+    tslist.bkb.............................................tslist file for defining locations for WRF output at model time step
+    
+    untar_hrrr_files.csh...................................untar HRRR analyses from Horel Group archive
