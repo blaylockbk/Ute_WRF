@@ -2,7 +2,10 @@
 # November 19, 2015
 
 # Script for decreasing the size of the Great Salt Lake to
-# a more realistic lake level.
+# a more realistic lake level. Uses the python basemap outline of the GSL, which 
+# is more current than MODIS, to shrink the lake.
+
+# I make the modifcication in the geo.em files for each domain after running GEOGRID
 
 #from netCDF4 import Dataset  # we dont have this library. use scipy instead
 from scipy.io import netcdf
@@ -13,9 +16,7 @@ import numpy as np
 import os
 import shutil
 
-from functions_domains_models import *
-
-
+from fucntions.custom_domains import get_domain
 
 def fix_nonlake_val(original, lat, lon, new_value):
     """
@@ -45,11 +46,10 @@ def fix_nonlake_val(original, lat, lon, new_value):
     
     # 2) Use maskoceans to identify points that are not lake based on pythons 
     #    basemap.   
-    
 
-    # shrink_lake is a masked array.
-    # shrink_lake.mask is a true/false array that tells us if the data point
-    # are (True) or are not (False) lake.
+    #   shrink_lake is a masked array.
+    #   shrink_lake.mask is a true/false array that tells us if the data point
+    #   are (True) or are not (False) lake.
     
     # 3) Make a copy of the original data. We will replace the non-lake points 
     #    with a new value. We make an intermediate (i) lake where we change
@@ -75,7 +75,7 @@ def fix_nonlake_val(original, lat, lon, new_value):
     new_lake[ymin:ymax,xmin:xmax] = i_lake[ymin:ymax,xmin:xmax]
     
     # 5) Make any other changes few changes in any extra spots
-    # Add water in Willard Bay
+    # Add water back in Willard Bay
     sub = get_domain('willard_bay')
     bl_lat = sub['bot_left_lat']
     bl_lon = sub['bot_left_lon']
@@ -90,7 +90,8 @@ def fix_nonlake_val(original, lat, lon, new_value):
 
 def confirm_save(old,new,replace_this, lat, lon, NEW_FILE):
     """
-    Plots the change and asks if you wish to save the new value
+    Plots the change so you can visually compare the 
+    modification and asks if you wish to save the new value.
     """
      
     x,y = m(lon,lat)
@@ -123,7 +124,7 @@ def confirm_save(old,new,replace_this, lat, lon, NEW_FILE):
     m.drawgreatcircle(botleftlon,botleftlat,botrightlon,botrightlat, color='#FFFF4c', linewidth='3')
     m.drawgreatcircle(botrightlon,botrightlat,toprightlon,toprightlat, color='#FFFF4c', linewidth='3')
     
-    ## Draw Box Elder County water area to locate Willard Bay
+    ## Draw Box Elder County water area shapefile to locate Willard Bay
     #m.readshapefile(HOME+'shape_files/tl_2015_BoxElder_areawater/tl_2015_49003_areawater','roads', linewidth=.25)
     
     m.drawstates(color='k', linewidth=.8)
@@ -162,16 +163,16 @@ def confirm_save(old,new,replace_this, lat, lon, NEW_FILE):
 # Open the geo_em files for each domain
 #====================================================
 
-domain = 'd01'
+#domain = 'd01'
+domain = 'd02'
 BASE = '/uufs/chpc.utah.edu/common/home/horel-group4/model/bblaylock/WRF3.7_kingspeakTest/WPS/'
 FILE = 'geo_em.%s.nc' % domain
 HOME = '/uufs/chpc.utah.edu/common/home/u0553130/'
 nc = netcdf.netcdf_file(BASE+FILE,'r')
 
 # Make a copy of the original that we will write the new data to.
-NEW_FILE = BASE+'lakesnip_'+FILE
-
-shutil.copy2(BASE+FILE,NEW_FILE)
+NEW_FILE = BASE+'lakesnip_'+FILE # new file name
+shutil.copy2(BASE+FILE,NEW_FILE) # copy the original file
 
 #====================================================
 # Get variables from NetCDF file
@@ -215,8 +216,8 @@ if MP == 'lcc':
 # This is step 2 of the function fix_nonlake_val
 # We do this outside the function so we only have to calculate it once.
 shrink_lake = maskoceans(lon,lat,landmask,
-                     inlands=True,   # we want to include lakes in our mask
-                     resolution='f', # get the highest resolutoin
+                     inlands=True,   # we want to include lakes in our mask (not all the world's lakes are included in the python basemap)
+                     resolution='f', # get the highest resolution
                      grid=1.25)      # and the best grid spacing in basemap
 
 #====================================================
