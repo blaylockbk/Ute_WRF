@@ -1,51 +1,83 @@
 # Brian Blaylock
 # November 19, 2015
 
-# Script for decreasing the size of the Great Salt Lake to
+# Script for decreasing the size of the Great Salt Lake (GSL) to
 # a more realistic lake level. Uses the python basemap outline of the GSL, which 
 # is more current than MODIS, to shrink the lake.
+# The basemap function "maskocean" is used to mask out the lake area.
 
-# I make the modifcication in the geo.em files for each domain after running GEOGRID
+# I make the modification in the geo_em.d0*.nc files for each domain after running GEOGRID
 
-#from netCDF4 import Dataset  # we dont have this library. use scipy instead
+#from netCDF4 import Dataset  # we dont have this library. Use scipy instead
 from scipy.io import netcdf
-#matplotlib.use('Agg')		#required for the CRON job. Says, "do not open plot in a window"??
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap, maskoceans
 import numpy as np
 import os
 import shutil
 
-from fucntions.custom_domains import get_domain
+from fucntions.custom_domains import get_domain # you don't have to have this
+                                                # It's just a dictionary of lats/lons for
+                                                # predefined lat/lon boundaries around the lake.
 
+def cut_data(bl_lat,tr_lat,bl_lon,tr_lon,lat,lon,buff=0):
+    '''    
+    Cut down data for domain for faster plotting.
+        
+    input: the bottom left corner and top right corner lat/lon coordinates
+        bl_lat = bottom left latitude
+        tr_lat = top right latitude
+        bl_lon = bottom left longitude
+        tr_lon = top right longitude
+        buff   = is a buffer in case the domain is skewed resulting in blank spots
+                 on the map plot.
+    return: the max and min of each the arrays x and y coordinates    
+    
+    '''
+    lat_limit = np.logical_and(lat>bl_lat,lat<tr_lat)
+    lon_limit = np.logical_and(lon>bl_lon,lon<tr_lon)
+    
+    total_limit = np.logical_and(lat_limit,lon_limit)
+    
+    xmin = np.min(np.where(total_limit==True)[0])-buff # +/- a buffer to cover map area 
+    xmax = np.max(np.where(total_limit==True)[0])+buff
+    ymin = np.min(np.where(total_limit==True)[1])-buff
+    ymax = np.max(np.where(total_limit==True)[1])+buff
+    
+    return xmin,xmax,ymin,ymax                                                
+                                                
 def fix_nonlake_val(original, lat, lon, new_value):
     """
+    Function creates a new array of the original variable with lake modification.
+    
     Input the original 2D array, specify the new value.
     Everything that isn't a python basemap defined GSL will be replaced with 
     the new value.
         Example 1)
-        original=lakemask. If it's not really lake, then replace with 1 (land).
+        For original=lakemask
+        If it's not really lake, then replace with 1 (land).
         Example 2)
-        original=lake_depth. If it's not really lake, then replace with a depth (10).
+        For original=lake_depth
+        If it's not really lake, then replace with a depth (10).
         
-        two_way set to true will convert all non-lake points to its origianl.
     """
     
     # 1) We don't want to replace all the water points in the state, just 
     #    arount the GSL. So, grab a subdomain...
 
-    # cut the data points to our GSL cut domain
+    # cut the data points to our GSL cut domain from my custom domain dictionary
     GSL = get_domain('great_salt_lake_cut')
     bl_lat = GSL['bot_left_lat']
     bl_lon = GSL['bot_left_lon']
     tr_lat = GSL['top_right_lat']
     tr_lon = GSL['top_right_lon']
     ymin,ymax,xmin,xmax = cut_data(bl_lat,tr_lat,bl_lon,tr_lon,lat,lon) 
-    #There, these are the index value max/mins for the section of interest
+    #These are the index value max/mins for the section of interest
 
     
+    
     # 2) Use maskoceans to identify points that are not lake based on pythons 
-    #    basemap.   
+    #    basemap. (see main part of code for this variable)   
 
     #   shrink_lake is a masked array.
     #   shrink_lake.mask is a true/false array that tells us if the data point
@@ -90,8 +122,9 @@ def fix_nonlake_val(original, lat, lon, new_value):
 
 def confirm_save(old,new,replace_this, lat, lon, NEW_FILE):
     """
-    Plots the change so you can visually compare the 
+    Function plots the change so you can visually compare the 
     modification and asks if you wish to save the new value.
+    If it looks good, saves the new data.
     """
      
     x,y = m(lon,lat)
@@ -182,10 +215,15 @@ lat = nc.variables['XLAT_M'][0]
 lat = lat.copy()
 lon = nc.variables['XLONG_M'][0]
 lon = lon.copy()
-# Open the variable that needs to be changed to fix lake area
+
+# Open the variables that need to be changed to fix lake area
 landmask = nc.variables['LANDMASK'][0].copy()
 lakedepth = nc.variables['LAKE_DEPTH'][0].copy()
 LandUseCat = nc.variables['LU_INDEX'][0].copy()
+#additional variables needed to change (03/28/2016)
+SoilBot = nc.variables['SCB_DOM'][0].copy()
+SoilTop = nc.variables['SCT_DOM'][0].copy()
+
 
 
 #====================================================
@@ -213,6 +251,7 @@ if MP == 'lcc':
         llcrnrlon=bot_left_lon,llcrnrlat=bot_left_lat,\
         urcrnrlon=top_right_lon,urcrnrlat=top_right_lat,)
 
+        
 # This is step 2 of the function fix_nonlake_val
 # We do this outside the function so we only have to calculate it once.
 shrink_lake = maskoceans(lon,lat,landmask,
@@ -223,9 +262,13 @@ shrink_lake = maskoceans(lon,lat,landmask,
 #====================================================
 # Fix values that aren't really lake
 #====================================================
-new_landmask = fix_nonlake_val(landmask,lat,lon,1) # If it's not lake, then make it land (1)
-new_lakedepth = fix_nonlake_val(lakedepth,lat,lon,10) # If it's not lake, then make the standard depth (10)
-new_LandUseCat = fix_nonlake_val(LandUseCat,lat,lon,16) # If it's not lake, then set at Barren or Sparcly vegetated (16)
+new_landmask = fix_nonlake_val(landmask,lat,lon,1)      # If it's not lake, then make it land (1)
+new_lakedepth = fix_nonlake_val(lakedepth,lat,lon,10)   # If it's not lake, then set to the standard depth (10)
+new_LandUseCat = fix_nonlake_val(LandUseCat,lat,lon,16) # If it's not lake, then set as "barren or Sparely vegetated" (16)
+
+# additional mods (thanks Matthew Scutter) (03/28/2016)
+new_SoilBot = fix_nonlake_val(SoilBot,lat,lon,8) # If it's not lake, then set as "silty clay loam" (8)
+new_SoilTop = fix_nonlake_val(LandUseCat,lat,lon,11) # If it's not lake, then set as "Silty Clay" (11)
 
 #====================================================
 # Confirm and save changes
@@ -233,3 +276,7 @@ new_LandUseCat = fix_nonlake_val(LandUseCat,lat,lon,16) # If it's not lake, then
 confirm_save(landmask,new_landmask,'LANDMASK',lat,lon,NEW_FILE)
 confirm_save(lakedepth,new_lakedepth,'LAKE_DEPTH',lat,lon,NEW_FILE)
 confirm_save(LandUseCat,new_LandUseCat,'LU_INDEX',lat,lon,NEW_FILE)
+
+# additional mods (thanks Matthew Scutter) (03/28/2016)
+confirm_save(SoilBot,new_SoilBot,'SCB_DOM',lat,lon,NEW_FILE)
+confirm_save(SoilTop,new_SoilTop,'SCT_DOM',lat,lon,NEW_FILE)
