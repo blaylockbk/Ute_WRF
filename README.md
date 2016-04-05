@@ -1,7 +1,9 @@
 Ute-WRF/
 ==============
 
-Mostly python codes that I've created at the University of Utah Mountain Meteorology Group.
+Mostly for post processing WRF output data.
+Python codes that I've created at the University of Utah Mountain Meteorology Group.
+For more info about running WRF see <http://home.chpc.utah.edu/~u0553130/Brian_Blaylock/wrf.html>
 
     cross_section_*.py...............plot a cross section through the model domain (wrfout or auxhist files)
     
