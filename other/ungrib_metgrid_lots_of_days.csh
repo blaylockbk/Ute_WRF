@@ -1,6 +1,7 @@
 #!/bin/csh
 
 # in order to make this work you'll have to edit the namlist.wps file
+# Usefull if all you analysis data is in different directories
 
 set year = '2015'
 set s_month = '05'
