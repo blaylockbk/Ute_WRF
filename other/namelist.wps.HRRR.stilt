@@ -1,0 +1,37 @@
+&share
+ wrf_core = 'ARW',
+ max_dom = 1,
+ start_date = '2015-05-21_21:00:00',
+ end_date   = '2015-05-21_23:00:00',
+ interval_seconds = 3600,
+ io_form_geogrid = 2,
+/
+
+&geogrid
+ parent_id         =   1,
+ parent_grid_ratio =   1,
+ i_parent_start    =   1,
+ j_parent_start    =   1,
+ e_we              = 350,
+ e_sn              = 350,
+ geog_data_res     = 'modis_lakes+30s',
+ dx = 3000,
+ dy = 3000,
+ map_proj = 'lambert',
+ ref_lat   =  40.25,
+ ref_lon   = -109.5,
+ truelat1  =  33.0,
+ truelat2  =  45.0,
+ stand_lon = -97.0,
+ geog_data_path = '/uufs/chpc.utah.edu/common/home/horel-group3/horel_data/WPS_GEOG/'
+/
+
+&ungrib
+out_format = 'WPS',
+prefix = 'FILE_stiltHRRR',
+/
+
+&metgrid
+fg_name = 'FILE_stiltHRRR'
+io_form_metgrid = 2,
+/
