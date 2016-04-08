@@ -31,6 +31,8 @@ For more info about running WRF see <http://home.chpc.utah.edu/~u0553130/Brian_B
     trim_map.py......................trims wrf data. Useful if you have a large domain and only want a section
     
     wind_calcs.py....................convert from UV components to speed and direction, vice versa, etc.
+    
+    staggered_to_mass.py.............converts U and V variables on a staggered grid to the mass point value.
 
 ####Modificaitons
 
