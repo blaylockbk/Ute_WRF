@@ -241,9 +241,6 @@ def LU_NLCD_chris():
     return cm, labels
 
 if __name__ == "__main__":
-    
-    
-    
     # Grab colormap and labels    
     cm,labels = LU_MODIS21()
     
@@ -252,11 +249,11 @@ if __name__ == "__main__":
     
     plt.figure(1)
     plt.title('Land Use Categories')
-    plt.pcolormesh(LU_INDEX,cmap = cm,vmin=1,vmax=len(labels)+1) # for example
+    plt.pcolormesh(LU_INDEX,cmap = cm,vmin=1,vmax=len(labels)+1) # for example. !!!MUST SET VMAX AND VMIN LIKE THIS TO SCALE COLOR RANGE CORRECTLY!!!
     cbar = plt.colorbar(shrink=2)
     cbar.set_ticks(np.arange(0.5,len(labels)+1))
     cbar.ax.set_yticklabels(labels)
-    #cbar.ax.set_yticklabels(labels) #If using a horizontal colorbar orientation
+    #cbar.ax.set_xticklabels(labels) #If using a horizontal colorbar orientation
     cbar.ax.invert_yaxis()
     
-    cbar.ax.tick_params(labelsize=15) 
+    cbar.ax.tick_params(labelsize=15)
