@@ -1,3 +1,4 @@
+
 ! Brian Blaylock
 ! 1 February 2016
 
@@ -68,3 +69,16 @@ IF ( config_flags%tracer_opt == 2 ) THEN
 END IF
 !---------------------------------------------------------------------
 !---------------------------------------------------------------------
+
+! Hints for initlizing tracers at time after run begins (thanks to Sudheer Bhimireddy for testing this approach):
+! Use the grid%itimestep variable to add a conditon test whether or not to add a tracer.
+! From his email:
+!! I've created a new namelist variable (tracer_time) under &dynamics, which takes the number of time 
+!! steps as input. I modified the solve_em.F code as:
+!!! tracer_time = desired_spin-up_time(in seconds)/time_step(in seconds) specified in the namelist.input 
+!!! So, for a 6hr spin-up time and a 10sec time step my tracer_time = 2160
+!   IF ( grid%itimestep .GE. tracer_time ) THEN
+!      ! Release the tracers 
+!   END IF
+!! A big limitation is that the timestep has to be constant for this to work. I am writing another routine to make 
+!! it work for adaptive time step.
