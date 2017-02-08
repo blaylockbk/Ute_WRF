@@ -1,3 +1,5 @@
+
+
 ! Initialize Tracers at model start time
 ! Add these to the module_initialize_real.F file
 ! mine is added at line 3398 after the "grid%save_topo_from_real = 1"
@@ -71,3 +73,7 @@ IF (config_flags%tracer_opt .eq. 2) THEN
     END IF
 END IF
 !----- BKB: Add tracers -------------------------------------------------------
+
+! If you want tracers that initialize at a specific time within the run, set 
+! these the tracer values to zero in this initilization script. Then in 
+! solve_em.F you will add a timestep condition to add tracers.
